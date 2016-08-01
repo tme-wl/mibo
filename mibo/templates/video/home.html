@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <!-- 可选的Bootstrap主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>home</title>
+    <!--
+    <link href="//vjs.zencdn.net/4.10/video-js.css" rel="stylesheet">
+    <script src="//vjs.zencdn.net/4.10/video.js"></script>
+    -->
+    <style type="text/css">
+        .tag {
+            background-color:#fff;
+            color:#333;
+            border-radius:4px;
+            padding-top:4px;
+            padding-bottom:4px;
+            padding-left:12px;
+            padding-right:12px;
+            border-top:10px;
+            border-bottom:10px;
+            margin-left:10px;
+            margin-right:10px;
+            font-size:12px;
+        }
+        .tag1 {
+            background-color:#eee;
+            color:#553;
+            border-radius:4px;
+            padding-top:4px;
+            padding-bottom:4px;
+            padding-left:12px;
+            padding-right:12px;
+            border-top:10px;
+            border-bottom:10px;
+            margin-left:10px;
+            margin-right:10px;
+            font-size:10px;
+        }
+    </style>
+</head>
+<body >
+<div class="container-fluid" id="body">
+    <div class="row">
+        <div class="col-xs-9">
+            <div id="tags">
+                <ul class='nav nav-pills' style='margin-left:10px;margin-top:10px;'>
+                    {% for son in tags %}
+                        {% if son.id == choicetagname %}
+                        <li id="tags{{son.id}}"  onclick="onclick1('tags{{son.id}}')" role="presentation" class="tag" style="margin:10px;background-color:#2A906B;color:#fff;">{{son.value}}</li>
+                        {% else %}
+                        <li id="tags{{son.id}}"  onclick="onclick1('tags{{son.id}}')" role="presentation" class="tag" style="margin:10px;">{{son.value}}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!--
+            {% if videos %}
+                {% for son in videos %}
+                    <div>
+                    <img src="/static/video/{{son.name}}.jpg"  height="300px" width="400px;" />
+                    <div>
+                {% endfor %}
+            {% endif %}
+
+            class="video-js vjs-default-skin"
+            -->
+            <div class="row">
+            {% if videos %}
+                {% for son in videos %}
+                    <div  class='col-xs-4' style="margin-bottom:20px;">
+                        <video id="video{{id}}" controls width="100%" preload  poster="/static/video/{{son.paperurl}}.jpg">
+                            <source src="/static/video/{{son.videourl}}.webm" type='video/webm' />
+                        </video>
+                        {% if son.tags %}
+                        <div id="videotag{{son.id}}">
+                            <ul class="nav nav-pills" >
+                                {% for tag in son.tags %}
+                                    {% if tag == '+' %}
+                                        <li id="add" onclick="addfunc()"  role="presentation" class="tag1" style="margin:5px;">{{tag}}</li>
+                                        <input id="addinput" type="text" onblur="addtag({{son.id}})" style="display:none;margin-top:5px;width:60px;">
+                                    {% else %}
+                                        <li  role="presentation" class="tag1" style="margin:5px;">{{tag}}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        片名: {{son.name}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+        </div>
+        <div class="col-xs-3">
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+
+function onclick1(id){
+    location.href="/video/home/?tag="+id
+}
+
+
+function callback_shuaxin(msg){
+    $("#body").html(msg.html);
+}
+
+function addfunc(){
+    $("#add").css("display","none");
+    $("#addinput").css("display","block");
+}
+function addtag(id){
+    var tag=$("#addinput").val();
+    if(tag!=""){
+        addtag_ajax(id,tag);
+    }else{
+        $("#add").css("display","block");
+        $("#addinput").css("display","none");
+    }
+
+}
+function addtag_ajax(id,tag){
+		$.ajax(
+		{
+			type:"GET",
+	    	url:"/video/addtag/?id="+id+"&tag="+tag ,
+	    	dataType:"json",
+	    	success:eval("callback_qx"),
+	    	error:function(){alert("error")},
+		});
+}
+
+
+function callback_qx(msg){
+    $("#tags").html(msg.tags);
+    var videotag="videotag"+msg.id;
+    $("#"+videotag).html(msg.videotags);
+}
+</script>
+</body>
+</html>
