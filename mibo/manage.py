@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
-
+#adfadfadfadfadsf
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mibo.settings")
 
